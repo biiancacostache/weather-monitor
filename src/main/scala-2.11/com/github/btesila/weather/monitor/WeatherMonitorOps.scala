@@ -20,7 +20,7 @@ trait WeatherMonitorOps extends LazyLogging {
 
   import system.dispatcher
 
-  private lazy val awc = AccuWeatherClient()
+  protected lazy val awc = AccuWeatherClient()
 
   /**
    *
@@ -50,7 +50,7 @@ trait WeatherMonitorOps extends LazyLogging {
         case Some(dailyCond) => (locationRecord, dailyCond)
         case _               =>
           logger.debug("Could not retrieve the daily forecast for {} {}", city, country)
-          throw LocationNotSupported
+          throw MissingWeatherInformation
       }
   }
 
@@ -67,7 +67,7 @@ trait WeatherMonitorOps extends LazyLogging {
     } yield (locationRecord, forecast)
   }
 
-  private def fetchLocationCrtRecord(city: String, country: String): Future[ActiveLocationRecord] = {
+  protected def fetchLocationCrtRecord(city: String, country: String): Future[ActiveLocationRecord] = {
     awc.getLocation(city, country) flatMap {
       case Some(location) =>
         awc.getCurrentConditions(location.key) map {
@@ -76,11 +76,11 @@ trait WeatherMonitorOps extends LazyLogging {
             ActiveLocationRecord(DateTime.now, location, crtConditions)
           }
           case _ =>
-            logger.debug("Failed to retrieve the current weather conditions for {} {}", city)
+            logger.debug("Failed to retrieve the current weather conditions for {} {}", city, country)
             throw MissingWeatherInformation
       }
       case _ =>
-        logger.debug("Failed to retrieve location information for {} {}", city)
+        logger.debug("Failed to retrieve location information for {} {}", city, country)
         Future.failed(LocationNotSupported)
     }
   }

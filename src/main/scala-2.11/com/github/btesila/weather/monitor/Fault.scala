@@ -9,6 +9,9 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 
 import scala.util.control.NoStackTrace
 
+/**
+ * Base type for all the faults triggered by the incoming requests.
+ */
 sealed abstract class Fault extends Exception with NoStackTrace
 
 object Fault {

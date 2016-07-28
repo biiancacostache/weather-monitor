@@ -31,7 +31,7 @@ object State {
    * @param country
    * @return
    */
-  def recordIdFor(city: String, country: String): String = s"$city-$country"
+  def recordIdFor(city: String, country: String): String = s"${city.toLowerCase}-${country.toLowerCase}"
 
   /**
    *
