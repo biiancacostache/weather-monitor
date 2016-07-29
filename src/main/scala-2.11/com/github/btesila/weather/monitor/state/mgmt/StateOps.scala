@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.github.btesila.weather.monitor.accuweather.AccuWeatherClient
 import com.github.btesila.weather.monitor.model.ActiveLocationRecord
-import org.joda.time.{DateTime, Seconds}
+import org.joda.time.{DateTime, Months, Seconds}
 
 trait StateOps {
   import State._
@@ -25,14 +25,11 @@ trait StateOps {
   /**
    *
    */
-  def cleanInactiveLocationRecords(): Unit = {
-    def isPastOneMonth(date: DateTime): Boolean = {
-      //      Months.monthsBetween(date, DateTime.now).getMonths >= 1
-      //      Minutes.minutesBetween(date, DateTime.now).getMinutes > 1
+  def cleanInactiveLocationRecords(ttl: Long): Unit = {
+    def isPastTime(date: DateTime, ttl: Long): Boolean =
+      DateTime.now.getMillis - date.getMillis >= ttl
 
-      Seconds.secondsBetween(date, DateTime.now).getSeconds > 15
-    }
-    activeLocationRecords.filter { case (_, ActiveLocationRecord(time, _, _)) => isPastOneMonth(time) }
+    activeLocationRecords.filter { case (_, ActiveLocationRecord(time, _, _)) => isPastTime(time, ttl) }
       .foreach { case entry => removeLocationRecord(entry)}
   }
 }

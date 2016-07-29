@@ -27,9 +27,10 @@ object Bootstrap extends App {
     Poll)
 
   // Remove data records for inactive locations
+  val cleanupInterval = stateSettings.Cleanup.Interval
   system.scheduler.schedule(
     initialDelay = stateSettings.Cleanup.InitialDelay,
-    interval = stateSettings.Cleanup.Interval,
+    interval = cleanupInterval,
     stateManager,
-    Clean)
+    Clean(cleanupInterval.length))
 }

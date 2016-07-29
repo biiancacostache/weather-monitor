@@ -12,15 +12,15 @@ class StateManager(mat: ActorMaterializer) extends Actor with StateOps with Lazy
     case Poll  =>
       logger.info("Polling temperature samples for active locations...")
       pollTemperatureSamples()(context.system, mat)
-    case Clean =>
+    case Clean(ttl) =>
       logger.info("Cleaning data records for inactive locations...")
-      cleanInactiveLocationRecords()
+      cleanInactiveLocationRecords(ttl)
   }
 }
 
 object StateManager {
   def props(mat: ActorMaterializer): Props = Props(new StateManager(mat))
 
+  case class Clean(ttl: Long)
   case object Poll
-  case object Clean
 }
