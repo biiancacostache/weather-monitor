@@ -4,14 +4,15 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{StatusCode, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import akka.http.scaladsl.server.directives.ParameterDirectives.ParamMagnet
 import com.github.btesila.weather.monitor.WeatherMonitorOps
 import com.github.btesila.weather.monitor.model.WeatherMonitorProtocol
-import spray.json.{RootJsonFormat, RootJsonWriter}
-import akka.http.scaladsl.unmarshalling._
+import spray.json.RootJsonWriter
 
 import scala.concurrent.Future
 
+/**
+ * Defines the routes corresponding to the exposed API of the Weather Monitor.
+ */
 trait WeatherMonitorRoutes extends WeatherMonitorProtocol {
   def ops: WeatherMonitorOps
 
@@ -33,13 +34,12 @@ trait WeatherMonitorRoutes extends WeatherMonitorProtocol {
     }
   }
 
-  private def completeWith[A: RootJsonWriter](statusCode: StatusCode, op: Future[A]): Route = {
+  private def completeWith[A: RootJsonWriter](statusCode: StatusCode, op: Future[A]): Route =
     extractExecutionContext { implicit ec =>
       complete {
         op map { (statusCode, _) }
       }
     }
-  }
 }
 
 object WeatherMonitorRoutes {

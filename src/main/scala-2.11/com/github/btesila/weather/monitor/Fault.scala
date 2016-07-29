@@ -25,7 +25,7 @@ object Fault {
   }
 
   /**
-   *
+   * This fault occurs when the service cannot provide weather information with regards to a given location.
    */
   case object LocationNotSupported extends Fault {
     val error = Error(
@@ -35,6 +35,9 @@ object Fault {
     )
   }
 
+  /**
+   * This fault occurs when the service receives empty content when fetching data from the weather information provider.
+   */
   case object MissingWeatherInformation extends Fault {
     val error = Error(
       NotFound.intValue.toString,
@@ -44,7 +47,8 @@ object Fault {
   }
 
   /**
-   *
+   * Exception handler for all `Fault` implementations defined above. This is used for handling erroneous request
+   * processing caused by the routes execution in  `akka-http`.
    */
   val Handler: PartialFunction[Throwable, Route] = {
     case LocationNotSupported      => complete(NotFound -> LocationNotSupported.error)

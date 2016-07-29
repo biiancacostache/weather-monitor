@@ -1,6 +1,6 @@
 package com.github.btesila.weather.monitor.accuweather
 
-import akka.actor.{ActorLogging, ActorSystem}
+import akka.actor.ActorSystem
 import akka.http.scaladsl.client.RequestBuilding._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.Uri.Query
@@ -12,6 +12,9 @@ import com.github.btesila.weather.monitor.model._
 
 import scala.concurrent.Future
 
+/**
+ * Provides a future based API used for the communication with the Accuweather service.
+ */
 trait AccuWeatherClient extends WeatherMonitorProtocol {
 
   implicit val system: ActorSystem
@@ -20,6 +23,13 @@ trait AccuWeatherClient extends WeatherMonitorProtocol {
 
   private lazy val settings = Settings(system).Accuweather
 
+  /**
+   * Retrieve location information given the city name and country name.
+   *
+   * @param city the city name
+   * @param country the country name
+   * @return a possible Location object, if provided by the Accuweather service
+   */
   def getLocation(city: String, country: String): Future[Option[Location]] = {
     val locationUri = Uri(settings.LocationUri)
     val uri = locationUri.withQuery(Query("q" -> s"$city,$country"))
@@ -30,6 +40,13 @@ trait AccuWeatherClient extends WeatherMonitorProtocol {
     } yield result.headOption
   }
 
+  /**
+   * Retrieve the current weather conditions given the location key, which identifies a specific location in the
+   * Accuweather service.
+   *
+   * @param locationKey the location key
+   * @return a possible CurrentWeatherConditions object, if provided by the Accuweather service
+   */
   def getCurrentConditions(locationKey: String): Future[Option[CurrentWeatherConditions]] = {
     val crtConditionsUri = Uri(settings.CurrentConditionUri)
     val uri = crtConditionsUri.copy(path = crtConditionsUri.path / locationKey)
@@ -40,6 +57,13 @@ trait AccuWeatherClient extends WeatherMonitorProtocol {
     } yield result.headOption
   }
 
+  /**
+   * Retrieve the daily weather forecast given the location key, which identifies a specific location in the
+   * Accuweather service.
+   *
+   * @param locationKey the location key
+   * @return a possible DailyForecast object, if provided by the Accuweather service
+   */
   def getDailyForecast(locationKey: String): Future[Option[DailyForecast]] = {
     val dailyForecastUri = Uri(settings.DailyForecastUri)
     val uri = dailyForecastUri.copy(path = dailyForecastUri.path / locationKey).withQuery(Query("metric" -> "true"))
@@ -50,6 +74,13 @@ trait AccuWeatherClient extends WeatherMonitorProtocol {
     } yield result.dailyForecasts.headOption
   }
 
+  /**
+   * Retrieve the extended (weekly) weather forecast given the location key, which identifies a specific location in the
+   * Accuweather service.
+   *
+   * @param locationKey the location key
+   * @return a possible ExtendedForecast object, if provided by the Accuweather service
+   */
   def getExtendedForecast(locationKey: String): Future[ExtendedForecast] = {
     val extendedForecastUri = Uri(settings.ExtendedForecastUri)
     val uri = extendedForecastUri.copy(path = extendedForecastUri.path / locationKey).withQuery(Query("metric" -> "true"))

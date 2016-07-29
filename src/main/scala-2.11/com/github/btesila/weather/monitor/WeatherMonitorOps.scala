@@ -11,6 +11,9 @@ import org.joda.time.DateTime
 
 import scala.concurrent.Future
 
+/**
+ * Provides all the Weather Monitor operations.
+ */
 trait WeatherMonitorOps extends LazyLogging {
 
   import State._
@@ -23,10 +26,13 @@ trait WeatherMonitorOps extends LazyLogging {
   protected lazy val awc = AccuWeatherClient()
 
   /**
+   * Retrieve the current weather conditions, given a location through the medium of the city name
+   * and country name. If the location is marked as active, the weather information is retrieved
+   * from the service state. Otherwise, a new request is sent to the weather information provider.
    *
-   * @param city
-   * @param country
-   * @return
+   * @param city the city name
+   * @param country the country name
+   * @return an ActiveLocationRecord object
    */
   def getLocationCrtRecord(city: String, country: String): Future[ActiveLocationRecord] =
     findActiveLocation(city, country) match {
@@ -39,10 +45,12 @@ trait WeatherMonitorOps extends LazyLogging {
     }
 
   /**
+   * Retrieve the daily weather forecast along the current weather conditions, given a location
+   * through the medium of the city name and country name.
    *
-   * @param city
-   * @param country
-   * @return
+   * @param city the city name
+   * @param country the country name
+   * @return a tuple containing an ActiveLocationRecord object along a DailyForecast object
    */
   def getDailyForecast(city: String, country: String): Future[(ActiveLocationRecord, DailyForecast)] =
     getLocationCrtRecord(city, country) flatMap { locationRecord =>
@@ -55,10 +63,12 @@ trait WeatherMonitorOps extends LazyLogging {
   }
 
   /**
+   * Retrieve the extended(weekly) weather forecast along the current weather conditions, given a location
+   * through the medium of the city name and country name.
    *
-   * @param city
-   * @param country
-   * @return
+   * @param city the city name
+   * @param country the country name
+   * @return a tuple containing an ActiveLocationRecord object along an ExtendedForecast object
    */
   def getExtendedForecast(city: String, country: String): Future[(ActiveLocationRecord, ExtendedForecast)] = {
     for {
@@ -67,6 +77,14 @@ trait WeatherMonitorOps extends LazyLogging {
     } yield (locationRecord, forecast)
   }
 
+  /**
+   * Retrieve the current weather conditions from the weather information provider, given a location through the medium
+   * of the city name and country name.
+   *
+   * @param city the city name
+   * @param country the country name
+   * @return an ActiveLocationRecord object
+   */
   protected def fetchLocationCrtRecord(city: String, country: String): Future[ActiveLocationRecord] = {
     awc.getLocation(city, country) flatMap {
       case Some(location) =>

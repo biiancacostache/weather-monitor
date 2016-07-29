@@ -2,9 +2,12 @@ package com.github.btesila.weather.monitor.model
 
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
-import spray.json.{JsArray, JsObject, JsonFormat, RootJsonFormat, _}
 import spray.json.DefaultJsonProtocol._
+import spray.json.{JsArray, JsObject, JsonFormat, RootJsonFormat, _}
 
+/**
+ * Spray json protocol definitions for the types used by the service.
+ */
 trait WeatherMonitorProtocol {
 
   implicit val LocationFormat: RootJsonFormat[Location] = new RootJsonFormat[Location] {

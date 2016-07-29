@@ -9,36 +9,17 @@ import scala.collection._
 import scala.collection.convert.decorateAsScala._
 
 /**
- *
+ * Holds the service state by storing weather information for frequently triggered locations.
  */
 object State {
-  /**
-   *
-   */
+
   val activeLocationRecords: concurrent.Map[String, ActiveLocationRecord] =
     new ConcurrentHashMap[String, ActiveLocationRecord]().asScala
 
-  /**
-   *
-   * @param location
-   * @return
-   */
   def recordIdFor(location: Location): String = recordIdFor(location.city.toLowerCase, location.country.toLowerCase)
 
-  /**
-   *
-   * @param city
-   * @param country
-   * @return
-   */
   def recordIdFor(city: String, country: String): String = s"${city.toLowerCase}-${country.toLowerCase}"
 
-  /**
-   *
-   * @param city
-   * @param country
-   * @return
-   */
   def findActiveLocation(city: String, country: String): Option[ActiveLocationRecord] = {
     val id = recordIdFor(city, country)
     activeLocationRecords.get(id) match {
@@ -50,30 +31,16 @@ object State {
     }
   }
 
-  /**
-   *
-   * @param location
-   * @param crtWeatherConditions
-   */
   def addLocationRecord(location: Location, crtWeatherConditions: CurrentWeatherConditions): Unit = {
     val id = recordIdFor(location)
     activeLocationRecords.put(id, ActiveLocationRecord(DateTime.now, location, crtWeatherConditions))
   }
 
-  /**
-   *
-   * @param id
-   * @param crtConditions
-   */
   def updateLocationRecord(id: String, crtConditions: CurrentWeatherConditions): Unit =
     activeLocationRecords.get(id).foreach { record =>
       activeLocationRecords.put(id, record.copy(crtConditions = crtConditions))
     }
 
-  /**
-   *
-   * @param entry
-   */
   def removeLocationRecord(entry: (String, ActiveLocationRecord)): Unit = {
     val (id, activeLocation) = entry
     activeLocationRecords.remove(id, activeLocation)
