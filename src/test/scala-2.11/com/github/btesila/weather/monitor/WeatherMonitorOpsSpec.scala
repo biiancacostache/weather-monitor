@@ -117,6 +117,46 @@ class WeatherMonitorOpsSpec
       }
     }
   }
+
+  "The `fetchLocationRecord` operation" should {
+    "successfully provide the current weather information for a location" in new TestableWeatherMonitorOps(system, mat) {
+      override lazy val awc = mock[AccuWeatherClient]
+      (awc.getLocation _).expects(*, *).returns(Future.successful(Some(location)))
+      (awc.getCurrentConditions _).expects(*).returns(Future.successful(Some(crtConditions)))
+
+      val result = fetchLocationCrtRecord(city, country).futureValue
+      result.location shouldBe location
+      result.crtConditions shouldBe crtConditions
+    }
+    "fail" when {
+      "the location information was not provided" in new TestableWeatherMonitorOps(system, mat) {
+        override lazy val awc = mock[AccuWeatherClient]
+        (awc.getLocation _).expects(*, *).returns(Future.successful(None))
+
+        fetchLocationCrtRecord(city, country).failed.futureValue shouldBe LocationNotSupported
+      }
+      "the service failed to fetch the location information" in new TestableWeatherMonitorOps(system, mat) {
+        override lazy val awc = mock[AccuWeatherClient]
+        (awc.getLocation _).expects(*, *).returns(Future.failed(InternalServiceError))
+
+        fetchLocationCrtRecord(city, country).failed.futureValue shouldBe InternalServiceError
+      }
+      "the current conditions were not provided" in new TestableWeatherMonitorOps(system, mat) {
+        override lazy val awc = mock[AccuWeatherClient]
+        (awc.getLocation _).expects(*, *).returns(Future.successful(Some(location)))
+        (awc.getCurrentConditions _).expects(*).returns(Future.successful(None))
+
+        fetchLocationCrtRecord(city, country).failed.futureValue shouldBe MissingWeatherInformation
+      }
+      "the service failed to fetch the current conditions" in new TestableWeatherMonitorOps(system, mat) {
+        override lazy val awc = mock[AccuWeatherClient]
+        (awc.getLocation _).expects(*, *).returns(Future.successful(Some(location)))
+        (awc.getCurrentConditions _).expects(*).returns(Future.failed(InternalServiceError))
+
+        fetchLocationCrtRecord(city, country).failed.futureValue shouldBe InternalServiceError
+      }
+    }
+  }
 }
 
 object WeatherMonitorOpsSpec {
