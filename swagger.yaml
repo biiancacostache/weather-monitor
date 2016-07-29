@@ -1,24 +1,14 @@
-# Example YAML to get you started quickly.
-# Be aware that YAML has indentation based scoping.
-# Code completion support is available so start typing for available options.
 swagger: '2.0'
 
-# This is your document metadata
 info:
   version: "1.0.0"
   title: Weather Monitor API
 
-# Describe your paths here
 paths:
-  # This is a path endpoint. Change it.
   /weather/current/conditions:
-    # This is a HTTP operation
     get:
-      # Describe this verb here. Note: you can use markdown
       description: Get the current weather conditions for the given location details.
-      # This is array of GET operation parameters:
       parameters:
-        # An example parameter that is in query and is required
         - name: city
           in: query
           description: The city name
@@ -29,13 +19,9 @@ paths:
           description: The country name
           required: true
           type: string
-      # Expected responses for this operation:
       responses:
-        # Response code
         200:
           description: The current weather conditions have been succesfully provided.
-          # A schema describing your response object.
-          # Use JSON Schema format
           schema:
             $ref: '#/definitions/CurrentWeatherConditions'
         404:
@@ -47,13 +33,9 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /weather/today:
-  # This is a HTTP operation
     get:
-      # Describe this verb here. Note: you can use markdown
       description: Get the today weather forecast for the given location details.
-      # This is array of GET operation parameters:
       parameters:
-        # An example parameter that is in query and is required
         - name: city
           in: query
           description: The city name
@@ -64,13 +46,9 @@ paths:
           description: The country name
           required: true
           type: string
-      # Expected responses for this operation:
       responses:
-        # Response code
         200:
           description: The weather forecast has been succesfully provided.
-          # A schema describing your response object.
-          # Use JSON Schema format
           schema:
             $ref: '#/definitions/TodayWeatherConditions'
         404:
@@ -82,13 +60,9 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   /weather/forecast:
-  # This is a HTTP operation
     get:
-      # Describe this verb here. Note: you can use markdown
       description: Get the extended weather forecast for the given location details.
-      # This is array of GET operation parameters:
       parameters:
-        # An example parameter that is in query and is required
         - name: city
           in: query
           description: The city name
@@ -99,13 +73,9 @@ paths:
           description: The country name
           required: true
           type: string
-      # Expected responses for this operation:
       responses:
-        # Response code
         200:
           description: The weather forecast has been succesfully provided.
-          # A schema describing your response object.
-          # Use JSON Schema format
           schema:
             $ref: '#/definitions/ExtendedWeatherForecast'
         404:
