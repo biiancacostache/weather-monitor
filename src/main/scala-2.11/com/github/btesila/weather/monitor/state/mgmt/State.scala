@@ -15,7 +15,7 @@ object State {
   /**
    *
    */
-  var activeLocationRecords: concurrent.Map[String, ActiveLocationRecord] =
+  val activeLocationRecords: concurrent.Map[String, ActiveLocationRecord] =
     new ConcurrentHashMap[String, ActiveLocationRecord]().asScala
 
   /**
