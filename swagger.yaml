@@ -1,0 +1,280 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "1.0.0"
+  title: Weather Monitor API
+
+# Describe your paths here
+paths:
+  # This is a path endpoint. Change it.
+  /weather/current/conditions:
+    # This is a HTTP operation
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: Get the current weather conditions for the given location details.
+      # This is array of GET operation parameters:
+      parameters:
+        # An example parameter that is in query and is required
+        - name: city
+          in: query
+          description: The city name
+          required: true
+          type: string
+        - name: country
+          in: query
+          description: The country name
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: The current weather conditions have been succesfully provided.
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/CurrentWeatherConditions'
+        404:
+          description: Could not provide information with regards to the given location.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: The service failed while processing the request.
+          schema:
+            $ref: '#/definitions/Error'
+  /weather/today:
+  # This is a HTTP operation
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: Get the today weather forecast for the given location details.
+      # This is array of GET operation parameters:
+      parameters:
+        # An example parameter that is in query and is required
+        - name: city
+          in: query
+          description: The city name
+          required: true
+          type: string
+        - name: country
+          in: query
+          description: The country name
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: The weather forecast has been succesfully provided.
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/TodayWeatherConditions'
+        404:
+          description: Could not provide information with regards to the given location.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: The service failed while processing the request.
+          schema:
+            $ref: '#/definitions/Error'
+  /weather/forecast:
+  # This is a HTTP operation
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: Get the extended weather forecast for the given location details.
+      # This is array of GET operation parameters:
+      parameters:
+        # An example parameter that is in query and is required
+        - name: city
+          in: query
+          description: The city name
+          required: true
+          type: string
+        - name: country
+          in: query
+          description: The country name
+          required: true
+          type: string
+      # Expected responses for this operation:
+      responses:
+        # Response code
+        200:
+          description: The weather forecast has been succesfully provided.
+          # A schema describing your response object.
+          # Use JSON Schema format
+          schema:
+            $ref: '#/definitions/ExtendedWeatherForecast'
+        404:
+          description: Could not provide information with regards to the given location.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: The service failed while processing the request.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Temperature:
+    description: Temperature details.
+    required:
+      - value
+      - unit
+    properties:
+      value:
+        description: The temperature value
+        type: number
+        format: int32
+      unit:
+        description: The unit used for measuring the temperature.
+        type: string
+  CurrentWeatherConditions:
+    description: Current weather conditions details.
+    required:
+      - date
+      - city
+      - country
+      - isDayTime
+      - headline
+      - temperature
+    properties:
+      date:
+        description: The observation time
+        type: string
+        format: date
+      city:
+        description: The city name
+        type: string
+      country:
+        description: The country name
+        type: string
+      isDayTime:
+        description: Flag to signal whether it is day time or not
+        type: boolean
+      headline:
+        description: The main description of the current conditions
+        type: string
+      temperature:
+        $ref: '#/definitions/Temperature'
+  TodayWeatherConditions:
+    description: The weather forecast for today.
+    required:
+      - date
+      - city
+      - country
+      - isDayTime
+      - headline
+      - day
+      - night
+      - temperature
+      - minimumTemperature
+      - maximumTemperature
+    properties:
+      date:
+        description: The observation time
+        type: string
+        format: date
+      city:
+        description: The city name
+        type: string
+      country:
+        description: The country name
+        type: string
+      isDayTime:
+        description: Flag to signal whether it is day time or not
+        type: boolean
+      headline: 
+        description: The main description of the current conditions
+        type: string
+      day:
+        description: The description of the weather conditions during the day
+        type: string
+      night:
+        description: The description of the weather conditions during the night
+        type: string
+      temperature:
+        $ref: '#/definitions/Temperature'
+      minimumTemperature:
+        $ref: '#/definitions/Temperature'
+      maximumTemperature:
+        $ref: '#/definitions/Temperature'
+  ExtendedWeatherForecast:
+    description: The weather forecast for the following 5 days.
+    required:
+      - date
+      - city
+      - country
+      - isDayTime
+      - headline
+      - day
+      - night
+      - temperature
+      - forecasts
+    properties:
+      date:
+        description: The observation time
+        type: string
+        format: date
+      city:
+        description: The city name
+        type: string
+      country:
+        description: The country name
+        type: string
+      isDayTime:
+        description: Flag to signal whether it is day time or not
+        type: boolean
+      headline: 
+        description: The main description of the current conditions
+        type: string
+      day:
+        description: The description of the weather conditions during the day
+        type: string
+      night:
+        description: The description of the weather conditions during the night
+        type: string
+      temperature:
+        $ref: '#/definitions/Temperature'
+      forecasts:
+        type: array
+        items:
+          $ref: '#/definitions/Forecast'
+  Forecast:
+    required:
+      - date
+      - minimumTemperature
+      - maximumTemperature
+      - day
+      - night
+    properties:
+      date:
+        description: The observation time.
+        type: string
+        format: date
+      minimumTemperature:
+        $ref: '#/definitions/Temperature'
+      maximumTemperature:
+        $ref: '#/definitions/Temperature'
+      day:
+        description: The description of the weather conditions during the day
+        type: string
+      night:
+        description: The description of the weather conditions during the night
+        type: string
+  Error:
+    description: Error description
+    required:
+      - errorCode
+      - errorType
+    properties:
+      errorCode:
+        description: Error code. Typically this will be a HTTP error code.
+        type: string
+      errorType:
+        description: A unique identifier for the error.
+        type: string
+      errorDescription:
+        description: A human readable error description.
+        type: string
